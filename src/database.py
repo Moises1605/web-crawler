@@ -17,11 +17,14 @@ class Database:
         try:
             filter = {'title': data['title']}
             result = self.mangas.find_one(filter, sort=[('date', -1)])
-            if result is None or (result['price'] > data['price'] or result['price'] < data['price']):
+            manga = data.copy()
+            if result is None or (result['price'] > data['price']):
+                if result: manga["old_price"] = result["price"]
                 self.mangas.insert_one(data)
-        except:
+        except Exception as error:
+            print(error)
             return None
-        return data
+        return manga
     
     def search(self, target, value):
         if target not in ['title', 'price', 'image']: #Validação para que o ususário insira campos válidos.
